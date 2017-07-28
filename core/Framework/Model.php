@@ -50,7 +50,7 @@
 		protected function save() {
 			$data = array();
 			foreach ($this->schema() as $schema) {
-				$data[$schema->Field] = isset($this->{$schema->Field} ? $this->{$schema->Field} : '';	
+				$data[$schema->Field] = isset($this->{$schema->Field}) ? $this->{$schema->Field} : '';	
 			}
 
 			$this->insert($data);
