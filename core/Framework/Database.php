@@ -311,6 +311,7 @@
 			$params = array();
 
 			if ($this->column == '*') {
+				$this->column = array();
 				foreach($this->schema() as $col) {
 					$this->column[] = $col->Field;
 					$params[$col->Field] = $data[$col->Field];
@@ -342,6 +343,7 @@
 			$update = '';
 
 			if ($this->column == '*') {
+				$this->column = array();
 				foreach($this->schema() as $col) {
 					$update .= $col->Field . '=:' . $col->Field . ', ';
 					$this->column[] = $col->Field;
@@ -376,6 +378,7 @@
 			$update = '';
 
 			if ($this->column == '*') {
+				$this->column = array();
 				foreach($this->schema() as $col) {
 					$update .= $col->Field . '=:' . $col->Field . ', ';
 					$this->column[] = $col->Field;

@@ -20,7 +20,8 @@
 		public function __construct() {
 			parent::__construct();
 		}	
-
+		
+		// Method untuk mencari data
 		protected function find($find) {
 			$data = array();
 
@@ -34,7 +35,8 @@
 				$this->{$key} = $value;
 			}
 		}
-
+		
+		// Method untuk mengambil kolom primary
 		protected function primaryField() {
 			$field = '';
 			
@@ -46,7 +48,8 @@
 
 			return $field;
 		}
-
+		
+		// Method untuk menyimpan model
 		protected function save() {
 			$data = array();
 			foreach ($this->schema() as $schema) {
