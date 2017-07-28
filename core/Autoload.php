@@ -1,30 +1,20 @@
 <?php
 	
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
+	*/
 	
 	define('APPLICATION_START', microtime());
 
-	/*
-	|--------------------------------------------------------------------------
-	| Register The Composer Auto Loader
-	|--------------------------------------------------------------------------
-	|
-	| Composer provides a convenient, automatically generated class loader
-	| for our application. We just need to utilize it! We'll require it
-	| into the script here so we do not have to manually load any of
-	| our application's PHP classes. It just feels great to relax.
-	|
+	/**
+	* Register all class from composer
 	*/
 
 	require DIR . 'vendor/autoload.php';
 	
-	/*
-	|--------------------------------------------------------------------------
-	| Register The Framework Auto Loader
-	|--------------------------------------------------------------------------
-	| 
-	| Framework akan otomatis di require berdasarkan nama class dan nama file
-	| begitu juga dengan controller, model, middleware dan view
-	|
+	/**
+	* Auto register the class
 	*/
 
 	spl_autoload_register(function ($classname) {

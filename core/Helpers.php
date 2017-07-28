@@ -1,21 +1,20 @@
 <?php
 	
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
+	*/
+
 	use Core\Facades\Request;
 	use Core\Facades\Session;
 	use Core\Facades\View;
 	use Core\Classes\Response;
 
-	/*
-	|--------------------------------------------------------------------------
-	| Fungsi Pembantu
-	|--------------------------------------------------------------------------
-	| 
-	| File ini berisi fungsi-fungsi untuk membantu memudahkan, 
-	| semua fungsi tanpa Class akan dimasukkan di file ini
-	|
+	/**
+	* Return base URL
+	* 
+	* @return string
 	*/
-
-	// Fungsi untuk mengambil URL dasar
 	function base_url() {
 		$uri = $_SERVER['REQUEST_URI'];
 		$base = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/';
@@ -23,22 +22,41 @@
 		return $base;
 	}
 	
-	// Fungsi untuk mengambil URL berikut dengan hostnamenya
+	/**
+	* Return URL with hostname
+	* 
+	* @param string $url
+	* @return string
+	*/
 	function full_url($url = '') {
 		return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . url($url);
 	}
 
-	// Fungsi untuk mengambil URL
+	/**
+	* Return URL without hostname
+	* 
+	* @param string $url
+	* @return string
+	*/
 	function url($url = '') {
 		return base_url() . $url;
 	}
 	
-	// Fungsi untuk mengambil asset URL
+	/**
+	* Return the asset filename
+	* 
+	* @param string $asset
+	* @return string
+	*/
 	function asset($asset = '') {
 		return base_url() . $asset;	
 	}
 	
-	// Fungsi untuk memeriksa keabsahan token
+	/**
+	* Determine if the csrf token is valid
+	* 
+	* @return boolean
+	*/
 	function csrf_check() {
 		$token = isset($_SERVER['HTTP_X-CSRF-TOKEN']) ? $_SERVER['HTTP_X-CSRF-TOKEN'] : '';
 		$token = empty($token) ? Request::get('csrf_token') : $token;
@@ -50,7 +68,11 @@
 		}
 	}
 	
-	// Fungsi untuk membuat token baru
+	/**
+	* Generate new csrf_token
+	* 
+	* @return string
+	*/
 	function csrf_token() {
 		$token = md5(uniqid(rand(), TRUE));
 		Session::set('csrf_token', $token);
@@ -59,17 +81,31 @@
 		return $token;
 	}
 
-	// Fungsi untuk menampilkan csrf field pada form
+	/**
+	* Create csrf token field inside form
+	* 
+	* @return string
+	*/
 	function csrf_field() {
 		return '<input type="hidden" name="csrf_token" value="' . csrf_token() . '">';
 	}
 	
-	// Fungsi untuk mengambil teks untuk informasi flash
+	/**
+	* Get flashing data from cookies
+	* 
+	* @param string $key
+	* @return string
+	*/
 	function flash($key) {
 		return Request::cookie($key);
 	}
 	
-	// Fungsi untuk mengkonversi text ke bentuk folder
+	/**
+	* Parsing string into directory format
+	* 
+	* @param string $dir
+	* @return string
+	*/
 	function parse_dir($dir) {
 		if (!empty($dir)) {
 			return $dir . '/';
@@ -78,38 +114,72 @@
 		}
 	}
 	
-	// Fungsi untuk mengambil folder utama
+	/**
+	* Get the base directory
+	* 
+	* @return string
+	*/
 	function base_path() {
 		return DIR;
 	}
 	
-	// Fungsi untuk mengambil folder App
+	/**
+	* Get the app directory
+	* 
+	* @param string $dir
+	* @return string
+	*/
 	function app_path($dir = '') {
 		return DIR . 'app/' . parse_dir($dir);
 	}
 	
-	// Fungsi untuk mengambil folder public
+	/**
+	* Get the public directory
+	* 
+	* @param string $dir
+	* @return string
+	*/
 	function public_path($dir = '') {
 		return DIR . 'public/' . parse_dir($dir);
 	}
 	
-	// Fungsi untuk mengambil folder storage
+	/**
+	* Get the storage directory
+	* 
+	* @param string $dir
+	* @return string
+	*/
 	function storage_path($dir = '') {
 		return DIR . 'storage/' . parse_dir($dir);
 	}
 	
-	// Fungsi untuk mengambil folder views
+	/**
+	* Get the view directory
+	* 
+	* @param string $dir
+	* @return string
+	*/
 	function views_path($dir = '') {
 		return app_path('Views') . parse_dir($dir);
 	}
 	
-	// Fungsi untuk menamilkan variabel dan menghentikan eksekusi
+	/**
+	* Show the variable values and exit
+	* 
+	* @param string $var
+	* @return string
+	*/
 	function dd($var) {
 		var_dump($var);
 		exit();
 	}
 	
-	// Fungsi untuk mengambil file configurasi
+	/**
+	* Get the config file values
+	* 
+	* @param string $name
+	* @return string
+	*/
 	function config($name = '') {
 		$config = require DIR . 'config/config.php';
 		if (!empty($name)) {
@@ -122,28 +192,53 @@
 		return $config;
 	}
 	
-	// Fungsi untuk membuat view
+	/**
+	* Short function to create the view
+	*
+	* @param string | null $name
+	* @param mixed $data
+	* @return Core\Framework\View
+	*/
 	function view($name, $data = array()) {
 		return View::make($name, $data);
 	}
 	
-	// Fungsi untuk membuat response
+	/**
+	* Short function to create the response
+	*
+	* @param string | null $response
+	* @return Core\Framework\Response
+	*/
 	function response($response = null) {
 		return new Response($response);
 	}
 	
-	// Fungsi untuk memeriksa apakah request berbentuk ajax
+	/**
+	* Determine if the request is ajax
+	* 
+	* @return boolean
+	*/
 	function is_ajax() {
 		return Request::isAjax();
 	}
 	
-	// Fungsi untuk memerikan apakah variable berbentuk array associative
+	/**
+	* Determine if the array is associative
+	* 
+	* @param array $arr
+	* @return boolean
+	*/
 	function is_assoc(array $arr) {
 		if (array() === $arr) return false;
 		return array_keys($arr) !== range(0, count($arr) - 1);
 	}
 
-	// Fungsi untuk menampilkan debug
+	/**
+	* Check the debug config and return show the debug content
+	* 
+	* @param string $debug
+	* @return string | boolean
+	*/
 	function debug($debug) {
 		if (config('app.debug')) {
 			echo $debug;

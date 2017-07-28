@@ -1,21 +1,37 @@
 <?php
 
-	/*
-	|--------------------------------------------------------------------------
-	| Facades Session Class
-	|--------------------------------------------------------------------------
-	| 
-	| Facades Session class adalah class untuk mempermudah dalam pengelolaan Session
-	|
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
 	*/
 
 	namespace Core\Framework;
 
+	/**
+	* Manage session data
+	*
+	* @package Core\Framework\Session
+	*/
 	class Session {
+		/**
+		* Indicates if session has been started
+		*
+		* @var boolean $started
+		*/
 		public static $started = false;
+
+		/**
+		* The prefix that used in the session naming
+		*
+		* @var boolean $prefix
+		*/
 		public static $prefix;
 		
-		// Method untuk memeriksa apakan session sudah di mulai atau belum
+		/**
+		* Check whether the session has been started or not
+		*
+		* @return boolean 
+		*/
 		public static function check() {
 			if(static::$started == false){
 				session_start();
@@ -27,7 +43,13 @@
 			return true;
 		}
 		
-		// Method untuk mengambil value dari session
+		/**
+		* Get a session by key
+		* 
+		* @param string $key A string that specified the key of session
+		* @param string $default A string that specified default value of return
+		* @return string
+		*/
 		public static function get($key, $default = '') {
 			$value = $default;
 			if (static::check()) {
@@ -39,14 +61,21 @@
 			return $value;
 		}
 		
-		// Method untuk mengeset value dari session
+		/**
+		* Set a session value by key
+		* 
+		* @param string $key A string that specified the key of session
+		* @param string $value A string that specified the value
+		*/
 		public static function set($key, $value = '') {
 			if (static::check()) {
 				$_SESSION[static::$prefix . $key] = $value;
 			}
 		}
 		
-		// Method untuk menghancurkan session
+		/**
+		* Destroying the session
+		*/
 		public static function destroy() {
 			if(static::$started == true){
 				session_unset();
@@ -54,21 +83,32 @@
 			}
 		}
 		
-		// Method untuk menggenerate ulang session ID
+		/**
+		* Regenerate new session ID
+		*/
 		public static function regenerate() {
 			if (static::check()) {
 				session_regenerate_id();
 			}
 		}
 		
-		// Method untuk menghapus value dari session
+		/**
+		* Delete a session by key
+		* 
+		* @param string $key A string that specified the key of session
+		*/
 		public static function forget($key) {
 			if (static::check()) {
 				unset($_SESSION[$key]);
 			}
 		}
 		
-		// Method untuk membuat flash notification
+		/**
+		* Delete a session by key
+		* 
+		* @param string $key A string that specified the key of session
+		* @param string $value A string that specified the value of flashing data
+		*/
 		public static function flash($key, $values = '') {
 			setcookie("COOKIE_" . static::$prefix . $key, $values, time() + 60, "/");
 		}

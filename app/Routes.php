@@ -1,5 +1,10 @@
 <?php
 	
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
+	*/
+
 	use Core\Framework\Route;
 	use Core\Framework\Request;
 	use Core\Framework\View;

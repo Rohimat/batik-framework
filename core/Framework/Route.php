@@ -1,30 +1,78 @@
 <?php
 
-	/*
-	|--------------------------------------------------------------------------
-	| Router Class
-	|--------------------------------------------------------------------------
-	| 
-	| Router Class adalah class untuk penerjemah antara URL dengan function atau Controller,
-	| class ini akan mengatur semua lalu lintas yang diminta dari URL
-	|
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
 	*/
 
 	namespace Core\Framework;
-
+	
+	/**
+	* Manage routing table
+	*
+	* @package Core\Framework\Route
+	*/
 	class Route {
-		protected $routes = array();
-		protected $where = array();
-		protected $middleware = array();
-		protected $prefix = '';
-		protected $namespace = '';
-		protected $index = null;
-		protected $content = '';
 
+		/**
+		* Specify regex of routing variable
+		*
+		* @var mixed $where
+		*/
+		protected $where = array();
+
+		/**
+		* Specify middleware for current routing
+		*
+		* @var mixed $middleware
+		*/
+		protected $middleware = array();
+
+		/**
+		* Specify prefix for url routing
+		*
+		* @var string $prefix
+		*/
+		protected $prefix = '';
+
+		/**
+		* Specify namespace for current controller called
+		*
+		* @var string $namespace
+		*/
+		protected $namespace = '';
+
+		/**
+		* Specify current routing index
+		*
+		* @var int $index
+		*/
+		protected $index = null;
+
+		/**
+		* Specify return content of router
+		*
+		* @var string $content
+		*/
+		protected $content = '';
+		
+		/**
+		* Create params for current group router
+		*
+		* @var mixed $params
+		*/
 		protected static $params = array();
+
+		/**
+		* Indicates if the router has been made/found
+		*
+		* @var boolean $routed
+		*/
 		protected static $routed = false;
 		
-		// Method constructor
+		/**
+		* Create a new routing
+		*/
 		public function __construct() {
 			if (sizeof(static::$params)) {
 				$params = static::$params;
@@ -35,31 +83,55 @@
 			}
 		}
 		
-		// Method untuk membatasi argument sebuah URL
+		/**
+		* Set regex of routing variable 
+		* 
+		* @param string $where A string that specified the regex 
+		* @return Core\Framework\Route
+		*/
 		protected function where($where) {
 			$this->where = $where;
 			return $this;
 		}
 		
-		// Method untuk menentukan namespace dari Controller
+		/**
+		* Set namespace of routing controller
+		* 
+		* @param string $namespace A string that specified the namespace 
+		* @return Core\Framework\Route
+		*/
 		protected function namespaces($namespace) {
 			$this->namespace = $namespace;
 			return $this;
 		}
 		
-		// Method untuk menentukan prefix sebuah router
+		/**
+		* Set prefix of routing URL
+		* 
+		* @param string $prefix A string that specified the prefix 
+		* @return Core\Framework\Route
+		*/
 		protected function prefix($prefix) {
 			$this->prefix = $prefix;
 			return $this;
 		}
 		
-		// Method untuk menentukan middleware sebuah router
+		/**
+		* Set middleware function to be called before call the controller 
+		* 
+		* @param mixed $middleware
+		* @return Core\Framework\Route
+		*/
 		protected function middleware($middleware) {
 			$this->middleware = $middleware;
 			return $this;
 		}
 		
-		// Method untuk mengambil nama path dari URL
+		/**
+		* Get the path of current request URL
+		* 
+		* @return string
+		*/
 		protected function path() {
 			$uri = $_SERVER['REQUEST_URI'];
 			$path = substr($uri, strlen(base_url()), strlen($uri));
@@ -67,12 +139,18 @@
 			return $path;
 		}
 		
-		// Method untuk memeriksa apakah router ditemukan atau tidak
+		/**
+		* Get status if the router has been made/found
+		* 
+		* @return boolean
+		*/
 		protected function found() {
 			return static::$routed;
 		}
 		
-		// Method untuk menjalankan router
+		/**
+		* Run the router and show the data
+		*/
 		protected function run() {
 			if ($this->found()) {
 				echo $this->content;
@@ -81,7 +159,11 @@
 			}
 		}
 		
-		// Method untuk membuat group router 
+		/**
+		* Create a group of router 
+		* 
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function group($callback) {
 			$params = array(
 				'where' => $this->where,
@@ -95,42 +177,72 @@
 			static::$params = array();
 		}
 		
-		// Method untuk membuat router dengan method GET
+		
+		/**
+		* Create a router from GET request method
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function get($map, $callback) {
 			if (Request::isMethod('get')) {
 				$this->map($map, $callback);
 			}
 		}
 		
-		// Method untuk membuat router dengan method POST
+		/**
+		* Create a router from POST request method
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function post($map, $callback) {
 			if (Request::isMethod('post')) {
 				$this->map($map, $callback);
 			}
 		}
 		
-		// Method untuk membuat router dengan method PUT
+		/**
+		* Create a router from PUT request method
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function put($map, $callback) {
 			if (Request::isMethod('put')) {
 				$this->map($map, $callback);
 			}
 		}
 		
-		// Method untuk membuat router dengan method DELETE
+		/**
+		* Create a router from DELETE request method
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function delete($map, $callback) {
 			if (Request::isMethod('delete')) {
 				$this->map($map, $callback);
 			}
 		}
 		
-		// Method untuk membuat router dengan semua method
+		/**
+		* Create a router from any request method
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function any($map, $callback) {
 			$this->map($map, $callback);
 		}
 		
-		// Method untuk mapping router
+		/**
+		* Mapping the router to callback function or controller
+		* 
+		* @param string $map A string to set url path
+		* @param function | string $callback A function of callback or the name of controller
+		*/
 		protected function map($map, $callback) {
-			// Cek prefix
 			if (!empty($this->prefix)) {
 				$map = $this->prefix . '/' . $map;
 			}			
@@ -142,7 +254,6 @@
 			$arPath = explode('/', $path);
 			$args = array();
 			
-			// Looping bagian dari map
 			for ($i = 0; $i < sizeof($arMap); $i++) {
 				if (substr($arMap[$i], 0, 1) == '{') {
 					$var = substr($arMap[$i], 1, -1);
@@ -160,15 +271,13 @@
 				} 
 			}
 			
-			// Cek apakah map sesuai dengan URL diminta
 			if ($match) {
 				$next = true;
 				
-				// Cek apakah tersedia middleware
 				if (sizeof($this->middleware)) {
 					foreach ($this->middleware as $middleware) {
 						if ($next) {
-							$middleware = 'App\\Middleware\\' . ucwords(strtolower($middleware)) . 'Middleware::handler';
+							$middleware = 'Core\\Middleware\\' . ucwords(strtolower($middleware)) . 'Middleware::handler';
 							if (is_callable($middleware)) {
 								$next = call_user_func($middleware);	
 							}
@@ -176,10 +285,8 @@
 					}
 				}
 				
-				// Cek apakah middleware menghasilkan true
 				if ($next) {
 					if (is_callable($callback)) {
-						// Panggil callback function
 						$this->content = call_user_func_array($callback, $args);
 					} else {
 						$namespaces = $this->namespace;
@@ -188,12 +295,10 @@
 						}
 
 						$arCallback = explode('@', $callback);
-						$controller = 'App\\Controllers\\' . $namespaces . $arCallback[0];
+						$controller = 'Core\\Controllers\\' . $namespaces . $arCallback[0];
 						$method = isset($arCallback[1]) ? $arCallback[1] : 'index';
 						
-						// Cek apakah controller dan method tersedia
 						if (class_exists($controller) && method_exists($controller, $method)) {
-							// Jalankan controller
 							$instance = new $controller();
 							$this->content = $instance->$method(...$args);
 						} else {
@@ -206,14 +311,15 @@
 			}
 		}
 		
-		// Method untuk membuat router berjalan secara otomatis
+		/**
+		* Create automatic routing based on URL
+		*/
 		protected function auto() {
 			$path = substr($this->path(), strlen($this->prefix) + 1, strlen($this->path()));
 			$arPath = explode('/', $path);
 			$controller = '';
 			$method = '';
 			
-			// Looping bagian URL dan terjemahkan kedalam bentuk map dan controller
 			for ($i = 0; $i < sizeof($arPath); $i++) {
 				if ($i == 0) {
 					$controller = ucwords(strtolower($arPath[0])) . 'Controller'; 
@@ -227,7 +333,10 @@
 				$this->map($path, $controller . '@' . $method);
 			}
 		}
-
+		
+		/**
+		* Override calling method
+		*/
 		public static function __callStatic($method, $args) {
 			$instance = new Route();
 			return $instance->$method(...$args);

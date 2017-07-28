@@ -1,27 +1,46 @@
 <?php
 	
-	/*
-	|--------------------------------------------------------------------------
-	| Controller Class
-	|--------------------------------------------------------------------------
-	| 
-	| Controller Class adalah class utama untuk membangun sebuah controller,
-	| Class ini akan di extend di semua Controller
-	|
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
 	*/
 
 	namespace Core\Framework;
-
+	
+	/**
+	* Base of model class
+	*
+	* @package Core\Framework\Model
+	*/
 	class Model extends Database {
+		
+		/**
+		* Specify the model table name
+		*
+		* @var string $table
+		*/
 		protected $table = '';
+
+		/**
+		* Specify the field  to be fillable
+		*
+		* @var mixed $fillable
+		*/
 		protected $fillable = array();
 		
-		// Method untuk menginisialisasi db
+		/**
+		* Create new model
+		*/
 		public function __construct() {
 			parent::__construct();
 		}	
 		
-		// Method untuk mencari data
+		/**
+		* Finding data using primary key or specified field
+		* 
+		* @param string | int | mixed $find
+		* @return mixed
+		*/
 		protected function find($find) {
 			$data = array();
 
@@ -38,7 +57,11 @@
 			return $this;
 		}
 		
-		// Method untuk mengambil kolom primary
+		/**
+		* Finding the primary key of table
+		* 
+		* @return string
+		*/
 		protected function primaryField() {
 			$field = '';
 			
@@ -51,16 +74,26 @@
 			return $field;
 		}
 		
-		// Method untuk menyimpan model
+		/**
+		* Saving model data
+		* 
+		* @return boolean
+		*/
 		protected function save() {
 			$data = array();
 			foreach ($this->schema() as $schema) {
-				$data[$schema->Field] = isset($this->{$schema->Field}) ? $this->{$schema->Field} : '';	
+				if (in_array($schema->Field, $this->fillable) || sizeof($fillable) <= 0) { 
+					$data[$schema->Field] = isset($this->{$schema->Field}) ? $this->{$schema->Field} : '';	
+					$this->column[] = $schema->Field;
+				}
 			}
 
 			return $this->insert($data);
 		}
-
+		
+		/**
+		* Override calling method
+		*/
 		public static function __callStatic($method, $args) {
 			$class = get_called_class();
 			$instance = new $class();

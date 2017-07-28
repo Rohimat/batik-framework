@@ -1,31 +1,93 @@
 <?php
 	
-	/*
-	|--------------------------------------------------------------------------
-	| Database Class
-	|--------------------------------------------------------------------------
-	| 
-	| Database Class adalah class mengatur semua lalu lintas ke database,
-	| Class ini menggunakan PDO sebagai dasar nya
-	|
+	/**
+	* @author Rohimat Nuryana <rohimat@gmail.com>
+	* @copyright 2017 BangunTeknologi.com
 	*/
 	
 	namespace Core\Framework;	
 	use \PDO as PDO;
-
+	
+	/**
+	* Manage the database using PDO extension
+	*
+	* @package Core\Framework\Database
+	*/
 	class Database extends PDO {
+
+		/**
+		* Specify the table name of database
+		*
+		* @var string $table
+		*/
 		protected $table = '';
+
+		/**
+		* Specify the query to run
+		*
+		* @var string $query
+		*/
 		protected $query = '';
+
+		/**
+		* All of the data fethced by query
+		*
+		* @var array result
+		*/
 		protected $result = array();
+
+		/**
+		* Specify the order of query
+		*
+		* @var string | mixed $order
+		*/
 		protected $order = array();
+
+		/**
+		* Specify the group of query
+		*
+		* @var string | mixed $group
+		*/
 		protected $group = array();
+
+		/**
+		* Specify the column 
+		*
+		* @var string | mixed $column
+		*/
 		protected $column = '*';
+
+		/**
+		* Limit the query
+		*
+		* @var string $limit
+		*/
 		protected $limit = '';
+
+		/**
+		* Where clause in query
+		*
+		* @var mixed $where
+		*/
 		protected $where = array();
+
+		/**
+		* Parameter to be binding in query
+		*
+		* @var mixed $params
+		*/
 		protected $params = array();
+
+		/**
+		* Current query statement
+		*
+		* @var statement $statement
+		*/
 		protected $statement = null;
 
-		// Method constructor sekaligus untuk membentuk sebuah koneksi
+		/**
+		* Initializing database connection
+		*/
 		public function __construct() {
 			try {
 				$host = config('database.host');
@@ -44,13 +106,24 @@
 			}
 		}	
 
-		// Method untuk menentukan tabel yang akan dieksekusi
+		/**
+		* Set the table to be processed
+		* 
+		* @param string $table A string that specified the table name 
+		* @return Core\Framework\Database
+		*/
 		protected function table($table) {
 			$this->table = $table;
 			return $this;
 		}
 		
-		// Method untuk membangun sebuah query
+		/**
+		* Set the query to be processed
+		* 
+		* @param string $query A string that specified the query
+		* @param mixed $params Parameter to be binding
+		* @return Core\Framework\Database
+		*/
 		protected function select($query = '', $params = array()) {
 			$this->query = $query;
 			$this->params = $params;
@@ -58,13 +131,23 @@
 			return $this;
 		}
 		
-		// Method untuk menentukan kolom yang akan diambil
+		/**
+		* Set the column name
+		* 
+		* @param string | mixed $column
+		* @return Core\Framework\Database
+		*/
 		protected function column($column) {
 			$this->column = $column;
 			return $this;
 		}
 		
-		// Method untuk memisahkan kolom yang tidak akan dipakai
+		/**
+		* Exclude the column
+		* 
+		* @param string | mixed $column
+		* @return Core\Framework\Database
+		*/
 		protected function exclude($column) {
 			$this->column = array();
 			foreach ($this->schema() as $col) {
@@ -76,7 +159,13 @@
 			return $this;
 		}
 		
-		// Method untuk membatasi hasil query
+		/**
+		* Set the result limit of query
+		* 
+		* @param int $start
+		* @param int $limit
+		* @return Core\Framework\Database
+		*/
 		protected function limit($start = 0, $limit = 0) {
 			$this->limit .= ' limit ' . $start;
 
@@ -87,25 +176,44 @@
 			return $this;
 		}
 
-		// Method untuk menentukan kondiri
+		/**
+		* Set where clause
+		* 
+		* @param string | mixed $where
+		* @return Core\Framework\Database
+		*/
 		protected function where($where) {
 			$this->where = $where;
 			return $this;
 		}
 		
-		// Method untuk urutan hasil query
+		/**
+		* Set the query order
+		* 
+		* @param string | mixed $order
+		* @return Core\Framework\Database
+		*/
 		protected function orderBy($order) {
 			$this->order = $order;
 			return $this;
 		}
 		
-		// Method untuk pengelompokan hasil query
+		/**
+		* Set the query grouping
+		* 
+		* @param string | mixed $group
+		* @return Core\Framework\Database
+		*/
 		protected function groupBy($group) {
 			$this->group = $group;
 			return $this;
 		}
 		
-		// Method untuk menghitung jumlah data
+		/**
+		* Return the count of data
+		* 
+		* @return int
+		*/
 		protected function count() {
 			$this->column = 'count(*) as jumlah';
 			$this->get(PDO::FETCH_NUM);
@@ -113,7 +221,12 @@
 			return $this->result[0][0];
 		}
 		
-		// Method untuk mencari data paling kecil
+		/**
+		* Return the minimum of data by fieldname
+		* 
+		* @param string $field
+		* @return int | string
+		*/
 		protected function min($field = '') {
 			$this->column = 'min(' . $field . ') as minimal';
 			$this->get(PDO::FETCH_NUM);
@@ -121,7 +234,12 @@
 			return $this->result[0][0];
 		}
 		
-		// Method untuk mencari data paling besar
+		/**
+		* Return the maximum of data by fieldname
+		* 
+		* @param string $field
+		* @return int | string
+		*/
 		protected function max($field = '') {
 			$this->column = 'max(' . $field . ') as maximal';
 			$this->get(PDO::FETCH_NUM);
@@ -129,7 +247,12 @@
 			return $this->result[0][0];
 		}
 		
-		// Method untuk mencari rata-rata
+		/**
+		* Return the average of data by fieldname
+		* 
+		* @param string $field
+		* @return int | string
+		*/
 		protected function avg($field = '') {
 			$this->column = 'avg(' . $field . ') as avgs';
 			$this->get(PDO::FETCH_NUM);
@@ -137,19 +260,32 @@
 			return $this->result[0][0];
 		}
 
-		// Method untuk mengambil data pertama dari hasil query
+		/**
+		* Get the first result data
+		* 
+		* @return mixed
+		*/
 		protected function first() {
 			$this->get();
 			return $this->result[0];
 		}
 		
-		// Method untuk mengambil dari terakhir dari hasil query
+		/**
+		* Get the last result data
+		* 
+		* @return mixed
+		*/
 		protected function last() {
 			$this->get();
 			return $this->result[sizeof($this->result) - 1];
 		}
 		
-		// Method untuk mengubah sebuah query kedalam bentuk result array
+		/**
+		* Set the result from current query
+		* 
+		* @param PDO::FETCH_TYPE $fetchType
+		* @return array 
+		*/
 		protected function get($fetchType = PDO::FETCH_OBJ) {
 			if (empty($this->query)) {
 				$field = $this->parseField();
@@ -168,7 +304,11 @@
 			return $this->result;
 		}
 		
-		// Method untuk membentuk group pada query
+		/**
+		* Parsing group into query syntax
+		* 
+		* @return string
+		*/
 		protected function parseGroup() {
 			$group = '';
 			
@@ -189,7 +329,11 @@
 			}
 		}
 		
-		// Method untuk membentuk order pada query
+		/**
+		* Parsing order into query syntax
+		* 
+		* @return string
+		*/
 		protected function parseOrder() {
 			$order = '';
 			
@@ -214,7 +358,11 @@
 			}
 		}
 		
-		// Method untuk membentuk where pada query
+		/**
+		* Parsing where clause into query syntax
+		* 
+		* @return string
+		*/
 		protected function parseWhere() {
 			$where = '';
 			
@@ -252,7 +400,11 @@
 			}
 		}
 		
-		// Method untuk membentuk field dari kolom
+		/**
+		* Parsing fieldname into query syntax
+		* 
+		* @return string
+		*/
 		protected function parseField() {
 			if (is_string($this->column)) {
 				return $this->column;
@@ -267,7 +419,12 @@
 			}
 		}
 		
-		// Method untuk mencari tau tipe dari parameter
+		/**
+		* Get the type of binding values
+		* 
+		* @param int | bool | null | string $value
+		* @return PDO::PARAM_TYPE
+		*/
 		protected function type($value) {
 			if(is_int($value))
 				$param = PDO::PARAM_INT;
@@ -283,7 +440,11 @@
 			return $param;
 		}
 
-		// Method untuk memasukan parameter kedalam query
+		/**
+		* Bind all parameter into PDO
+		* 
+		* @return Core\Framework\Database
+		*/
 		protected function bind() {
 			if (is_assoc($this->params)) {
 				foreach($this->params as $key => $value){
@@ -305,7 +466,12 @@
 			}
 		}
 		
-		// Method untuk insert
+		/**
+		* Inserting record into database
+		* 
+		* @param mixed $data A data to be saved into database
+		* @return boolean
+		*/
 		protected function insert($data = array()) {
 			$data = (array) $data;
 			$params = array();
@@ -337,7 +503,12 @@
 			}
 		}
 		
-		// Method untuk update
+		/**
+		* Updating record into database
+		* 
+		* @param mixed $data A data to be saved into database
+		* @return boolean
+		*/
 		protected function update($data) {
 			$data = (array) $data;
 			$update = '';
@@ -371,7 +542,12 @@
 			}
 		}
 		
-		// Method untuk replace
+		/**
+		* Replacing record into database
+		* 
+		* @param mixed $data A data to be saved into database
+		* @return boolean
+		*/
 		protected function replace($data) {
 			$data = (array) $data;
 			$params = array();
@@ -407,7 +583,11 @@
 			}
 		}
 		
-		// Method untuk delete
+		/**
+		* Deleting record
+		* 
+		* @return boolean
+		*/
 		protected function delete() {
 			$where = $this->parseWhere();
 			$order = $this->parseOrder();
@@ -423,7 +603,11 @@
 			}
 		}
 		
-		// Method untuk menampilkan skema dari tabel
+		/**
+		* Get the table schema
+		* 
+		* @return array
+		*/
 		protected function schema() {
 		    $query = $this->prepare("DESC `" . $this->table . "`");
 			$query->execute();
@@ -431,7 +615,10 @@
 
 			return $field;
 		}
-
+		
+		/**
+		* Override calling method
+		*/
 		public static function __callStatic($method, $args) {
 			$instance = new Database();
 			return $instance->$method(...$args);
