@@ -25,8 +25,8 @@
 		protected function find($find) {
 			$data = array();
 
-			if (is_string($find)) {
-				$data = $this->where([$this->primaryField => $find])->first();
+			if (is_string($find) || is_int($find)) {
+				$data = $this->where([$this->primaryField() => $find])->first();
 			} else {
 				$data = $this->where($find)->first();
 			}
@@ -34,6 +34,8 @@
 			foreach ($data as $key => $value) {
 				$this->{$key} = $value;
 			}
+
+			return $this;
 		}
 		
 		// Method untuk mengambil kolom primary
@@ -56,11 +58,12 @@
 				$data[$schema->Field] = isset($this->{$schema->Field}) ? $this->{$schema->Field} : '';	
 			}
 
-			$this->insert($data);
+			return $this->insert($data);
 		}
 
 		public static function __callStatic($method, $args) {
-			$instance = new Model();
+			$class = get_called_class();
+			$instance = new $class();
 			return $instance->$method(...$args);
 		}
 

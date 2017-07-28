@@ -4,7 +4,7 @@
 	use Core\Framework\Model;
 
 	class User extends Model {
-		public $table = 'users';
+		protected $table = 'users';
 	}
 
 ?>
