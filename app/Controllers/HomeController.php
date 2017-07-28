@@ -11,6 +11,8 @@
 	class HomeController extends Controller{
 		public function index() {
 			$user = new User();
+			$user->save();
+
 			return View::show('home');
 		}
 	}

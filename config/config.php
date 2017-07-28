@@ -14,7 +14,7 @@
 			'port'     => '3306',
 			'username' => 'imat',
 			'password' => 'imat', 
-			'database' => 'test'
+			'database' => 'framework'
 		], 
 
 		'session' => [
