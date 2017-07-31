@@ -315,7 +315,12 @@
 		* Create automatic routing based on URL
 		*/
 		protected function auto() {
-			$path = substr($this->path(), strlen($this->prefix), strlen($this->path()));
+			$path = $this->path();
+
+			if (!empty($this->prefix)) {
+				$path = substr($this->path(), strlen($this->prefix) + 1, strlen($this->path()));
+			}
+
 			$arPath = explode('/', $path);
 			$controller = '';
 			$method = '';
