@@ -4,4 +4,5 @@
 	
 	require DIR . 'core/Autoload.php';
 	require DIR . 'app/App.php';
+
 ?>

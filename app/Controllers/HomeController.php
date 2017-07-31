@@ -10,10 +10,6 @@
 
 	class HomeController extends Controller{
 		public function index() {
-			$user = User::find(3);
-
-			echo $user->name;
-
 			return View::show('home');
 		}
 	}

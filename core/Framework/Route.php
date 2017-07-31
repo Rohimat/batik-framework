@@ -295,7 +295,7 @@
 						}
 
 						$arCallback = explode('@', $callback);
-						$controller = 'Core\\Controllers\\' . $namespaces . $arCallback[0];
+						$controller = 'App\\Controllers\\' . $namespaces . $arCallback[0];
 						$method = isset($arCallback[1]) ? $arCallback[1] : 'index';
 						
 						if (class_exists($controller) && method_exists($controller, $method)) {

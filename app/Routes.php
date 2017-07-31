@@ -11,7 +11,6 @@
 	use Core\Framework\Response;
 	
 	Route::any('/', 'HomeController@index');
-
 	Route::prefix('admin')->middleware(['age'])->group(function() {
 		Route::get('home', 'HomeController');
 	});
