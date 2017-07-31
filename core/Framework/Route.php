@@ -316,15 +316,14 @@
 		*/
 		protected function auto() {
 			$path = $this->path();
+			$controller = '';
+			$method = '';
 
 			if (!empty($this->prefix)) {
 				$path = substr($this->path(), strlen($this->prefix) + 1, strlen($this->path()));
 			}
 
 			$arPath = explode('/', $path);
-			$controller = '';
-			$method = '';
-			
 			for ($i = 0; $i < sizeof($arPath); $i++) {
 				if ($i == 0) {
 					$controller = ucwords(strtolower($arPath[0])) . 'Controller'; 
