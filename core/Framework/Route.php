@@ -54,7 +54,7 @@
 		*
 		* @var string $content
 		*/
-		protected $content = '';
+		protected static $content = '';
 		
 		/**
 		* Create params for current group router
@@ -153,7 +153,7 @@
 		*/
 		protected function run() {
 			if ($this->found()) {
-				echo $this->content;
+				echo static::$content;
 			} else {
 				View::show('errors.404');
 			}
@@ -270,7 +270,7 @@
 					break;
 				} 
 			}
-			
+
 			if ($match) {
 				$next = true;
 				
@@ -287,7 +287,7 @@
 				
 				if ($next) {
 					if (is_callable($callback)) {
-						$this->content = call_user_func_array($callback, $args);
+						static::$content = call_user_func_array($callback, $args);
 					} else {
 						$namespaces = $this->namespace;
 						if (!empty($namespaces)) {
@@ -297,12 +297,12 @@
 						$arCallback = explode('@', $callback);
 						$controller = 'App\\Controllers\\' . $namespaces . $arCallback[0];
 						$method = isset($arCallback[1]) ? $arCallback[1] : 'index';
-						
+
 						if (class_exists($controller) && method_exists($controller, $method)) {
 							$instance = new $controller();
-							$this->content = $instance->$method(...$args);
+							static::$content = $instance->$method(...$args);
 						} else {
-							$this->conteht = 'Controller or method not found (' . $controller . '->' . $method . ')';
+							static::$content = 'Controller or method not found (' . $controller . '->' . $method . ')';
 						}
 					}
 
@@ -315,7 +315,7 @@
 		* Create automatic routing based on URL
 		*/
 		protected function auto() {
-			$path = substr($this->path(), strlen($this->prefix) + 1, strlen($this->path()));
+			$path = substr($this->path(), strlen($this->prefix), strlen($this->path()));
 			$arPath = explode('/', $path);
 			$controller = '';
 			$method = '';
