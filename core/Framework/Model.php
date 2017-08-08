@@ -39,7 +39,7 @@
 		* Finding data using primary key or specified field
 		* 
 		* @param string | int | mixed $find
-		* @return mixed
+		* @return array
 		*/
 		protected function find($find) {
 			$data = array();

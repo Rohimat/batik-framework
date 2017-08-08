@@ -155,7 +155,12 @@
 			if ($this->found()) {
 				echo static::$content;
 			} else {
-				View::show('errors.404');
+				if (Request::isAjax()) {
+					echo 'Error 404: Controller Not Found';
+					exit();
+				} else {
+					View::show('errors.404');
+				}
 			}
 		}
 		

@@ -3,8 +3,9 @@
 	return [
 		'app' => [
 			'name'     => 'Batik Framework',
-			'key'      => base64_encode('batik-framework-12345'), 
+			'key'      => base64_encode('batik-framework'), 
 			'debug'    => false,
+			'csrf'     => false,
 			'themes'   => '',
 			'locale'   => 'id'
 		],

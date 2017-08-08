@@ -169,7 +169,7 @@
 	* @param string $var
 	* @return string
 	*/
-	function dd($var) {
+	function vd($var) {
 		var_dump($var);
 		exit();
 	}
@@ -247,5 +247,31 @@
 			return true;
 		}
 	}
+	
+	/**
+	* Copy whole directory
+	* 
+	* @param string $src
+	* @param string $dst
+	*/
+	function recurse_copy($src, $dst) { 
+		$dir = opendir($src); 
+
+		if (!is_dir($dst)) {
+			@mkdir($dst); 
+		}
+
+		while($file = readdir($dir)) { 
+			if (($file != '.' ) && ($file != '..')) { 
+				if (is_dir($src . '/' . $file)) { 
+					recurse_copy($src . '/' . $file, $dst . '/' . $file); 
+				} else { 
+					copy($src . '/' . $file, $dst . '/' . $file); 
+				} 
+			} 
+		} 
+
+		closedir($dir); 
+	} 
 
 ?>

@@ -1,5 +1,6 @@
 {
     "require": {
-        "twig/twig": "^1.34"
+        "twig/twig": "^1.34",
+        "duncan3dc/blade": "^3.4"
     }
 }

@@ -6,6 +6,7 @@
 	*/
 	
 	define('APPLICATION_START', microtime());
+	define('VERSION', '1.0');
 
 	/**
 	* Register all class from composer

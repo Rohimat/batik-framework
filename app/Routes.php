@@ -15,8 +15,6 @@
 		Route::get('home', 'HomeController');
 	});
 
-	
-	Route::auto();
 	Route::run();
 
 ?>

@@ -7,7 +7,8 @@
 	
 
 	namespace Core\Framework;
-	
+	use duncan3dc\Laravel\Blade;
+	use duncan3dc\Laravel\BladeInstance;
 	/**
 	* Display data using twig component
 	*
@@ -26,10 +27,12 @@
 			if (static::exists($name)) {
 				$filename = static::filename($name);
 
-				$view = static::init(dirname($filename));	
-				return $view->render(basename($filename), $data);
+				$view = static::init(dirname($filename));
+				$name = substr(basename($filename), 0, -10);
+
+				return $view->render($name, $data);
 			} else {
-				return null;
+				return 'View not found';
 			}
 		}
 		
@@ -73,15 +76,11 @@
 		* Initializing twig component 
 		*
 		* @param string $name A string that specified the name of view
-		* @return \Twig_Environment
+		* @return BladeInstance
 		*/
 		public static function init($folder) {
-			\Twig_Autoloader::register();
-
-			$loader = new \Twig_Loader_Filesystem($folder);
-			$twig = new \Twig_Environment($loader);
-
-			return $twig;
+			$blade = new BladeInstance($folder, storage_path('cache'));
+			return $blade;
 		}
 	}
 

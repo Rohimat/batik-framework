@@ -6,7 +6,7 @@
   <meta name="Author" content="">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-  <title>Document</title>
+  <title>{{ config('app.name') }}</title>
  </head>
  <body>
 	Welcome
