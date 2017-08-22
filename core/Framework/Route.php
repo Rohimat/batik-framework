@@ -133,7 +133,8 @@
 		* @return string
 		*/
 		protected function path() {
-			$uri = $_SERVER['REQUEST_URI'];
+			$uri_parts = explode('?', $_SERVER['REQUEST_URI'], 2);
+			$uri = $uri_parts[0];
 			$path = substr($uri, strlen(base_url()), strlen($uri));
 
 			return $path;
@@ -249,31 +250,44 @@
 		*/
 		protected function map($map, $callback) {
 			if (!empty($this->prefix)) {
-				$map = $this->prefix . '/' . $map;
+				$map = str_replace('//', '/', $this->prefix . '/' . $map);
 			}			
 			
 			$match = true;
 			$path = $this->path();
-			
-			$arMap = $map == '/' ? array('') : explode('/', $map);				
-			$arPath = explode('/', $path);
 			$args = array();
 			
-			for ($i = 0; $i < sizeof($arMap); $i++) {
-				if (substr($arMap[$i], 0, 1) == '{') {
-					$var = substr($arMap[$i], 1, -1);
-					$preg = preg_match('/^' . $this->where[$var] . '*$/', $arPath[$i]);
+			$arMap = $map == '/' ? array('') : explode('/', $map);				
+			$arPath = empty($path) ? array('') : explode('/', $path);
+			
+			if ($map == $path || ($path == $this->prefix && $map == $this->prefix . '/')) {
+				$match = true;
+			} elseif (sizeof($arMap) == sizeof($arPath)) {
+				for ($i = 0; $i < sizeof($arPath); $i++) {
+					$_path = isset($arPath[$i]) ? $arPath[$i] : '';
+					$_map = isset($arMap[$i]) ? $arMap[$i] : '';
+					$_where = $this->where;
 
-					if (sizeof($this->where) && !$preg) {
+					if (substr($_map, 0, 1) == '{' && !empty($_path)) {
+						$var = substr($_map, 1, -1);
+						$where = isset($_where[$var]) ? $_where[$var] : '';
+						$preg = true;
+					
+						if (!empty($where)) {
+							if (!preg_match('/^' . $where . '*$/', $_path)) {
+								$match = false;
+								break;
+							}
+						}
+						
+						$args[] = $_path;
+					} elseif ($_map != $_path) {
 						$match = false;
 						break;
-					} else {
-						$args[] = $arPath[$i];
-					}
-				} elseif ($arMap[$i] != $arPath[$i]) {
-					$match = false;
-					break;
-				} 
+					} 
+				}
+			} else {
+				$match = false;
 			}
 
 			if ($match) {
@@ -282,7 +296,7 @@
 				if (sizeof($this->middleware)) {
 					foreach ($this->middleware as $middleware) {
 						if ($next) {
-							$middleware = 'Core\\Middleware\\' . ucwords(strtolower($middleware)) . 'Middleware::handler';
+							$middleware = 'App\\Middleware\\' . ucwords(strtolower($middleware)) . 'Middleware::handler';
 							if (is_callable($middleware)) {
 								$next = call_user_func($middleware);	
 							}
@@ -321,17 +335,19 @@
 		*/
 		protected function auto() {
 			$path = $this->path();
+			$namespace = '';
 			$controller = '';
 			$method = '';
 
 			if (!empty($this->prefix)) {
 				$path = substr($this->path(), strlen($this->prefix) + 1, strlen($this->path()));
+				$namespace = ucwords(str_replace("/", "\\", $this->prefix)) . "\\";
 			}
 
 			$arPath = explode('/', $path);
 			for ($i = 0; $i < sizeof($arPath); $i++) {
 				if ($i == 0) {
-					$controller = ucwords(strtolower($arPath[0])) . 'Controller'; 
+					$controller = !empty($arPath[0]) ? $namespace . ucwords(strtolower($arPath[0])) . 'Controller' : ''; 
 				} elseif ($i == 1) {
 					$method = $arPath[1];	
 				}

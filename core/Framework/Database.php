@@ -182,8 +182,12 @@
 		* @param string | mixed $where
 		* @return Core\Framework\Database
 		*/
-		protected function where($where) {
-			$this->where = $where;
+		protected function where($where, $params = null) {
+			if ($params != null) {
+				$this->where = array($where => $params);
+			} else {
+				$this->where = $where;
+			}
 			return $this;
 		}
 		
@@ -208,6 +212,12 @@
 			$this->group = $group;
 			return $this;
 		}
+
+		protected function reset() {
+			$this->query = '';
+			$this->limit = '';
+			$this->column = '*';
+		}
 		
 		/**
 		* Return the count of data
@@ -215,10 +225,12 @@
 		* @return int
 		*/
 		protected function count() {
+			$this->reset();
 			$this->column = 'count(*) as jumlah';
 			$this->get(PDO::FETCH_NUM);
+			$this->reset();
 
-			return $this->result[0][0];
+			return $this->result ? $this->result[0][0] : 0;
 		}
 		
 		/**
@@ -228,10 +240,12 @@
 		* @return int | string
 		*/
 		protected function min($field = '') {
+			$this->reset();
 			$this->column = 'min(' . $field . ') as minimal';
 			$this->get(PDO::FETCH_NUM);
+			$this->reset();
 
-			return $this->result[0][0];
+			return $this->result ? $this->result[0][0] : 0;
 		}
 		
 		/**
@@ -241,10 +255,12 @@
 		* @return int | string
 		*/
 		protected function max($field = '') {
+			$this->reset();
 			$this->column = 'max(' . $field . ') as maximal';
 			$this->get(PDO::FETCH_NUM);
+			$this->reset();
 
-			return $this->result[0][0];
+			return $this->result ? $this->result[0][0] : 0;
 		}
 		
 		/**
@@ -254,10 +270,12 @@
 		* @return int | string
 		*/
 		protected function avg($field = '') {
+			$this->reset();
 			$this->column = 'avg(' . $field . ') as avgs';
 			$this->get(PDO::FETCH_NUM);
+			$this->reset();
 
-			return $this->result[0][0];
+			return $this->result ? $this->result[0][0] : 0;
 		}
 
 		/**
@@ -267,7 +285,12 @@
 		*/
 		protected function first() {
 			$this->get();
-			return $this->result[0];
+
+			if (sizeof($this->result)) {
+				return $this->result[0];
+			} else {
+				return new \stdClass();
+			}
 		}
 		
 		/**
@@ -277,16 +300,15 @@
 		*/
 		protected function last() {
 			$this->get();
-			return $this->result[sizeof($this->result) - 1];
+
+			if (sizeof($this->result)) {
+				return $this->result[sizeof($this->result) - 1];
+			} else {
+				return new \stdClass();
+			}
 		}
-		
-		/**
-		* Set the result from current query
-		* 
-		* @param PDO::FETCH_TYPE $fetchType
-		* @return array 
-		*/
-		protected function get($fetchType = PDO::FETCH_OBJ) {
+
+		protected function prepareQuery() {
 			if (empty($this->query)) {
 				$field = $this->parseField();
 				$where = $this->parseWhere();
@@ -298,6 +320,28 @@
 
 			$this->statement = $this->prepare($this->query . $this->limit);
 			$this->bind();
+		}
+		
+		/**
+		* Return the count of result
+		* 
+		* @return int
+		*/
+		protected function resultCount() {
+			$this->prepareQuery();
+			$this->statement->execute();
+
+			return $this->statement->rowCount();
+		}
+
+		/**
+		* Set the result from current query
+		* 
+		* @param PDO::FETCH_TYPE $fetchType
+		* @return array 
+		*/
+		protected function get($fetchType = PDO::FETCH_OBJ) {
+			$this->prepareQuery();
 			$this->statement->execute();
 			$this->result = $this->statement->fetchAll($fetchType);
 
@@ -459,6 +503,7 @@
 					$value = $this->params[$i - 1];
 					$value = is_null($value) ? '' : $value;
 					$type = $this->type($value);
+
 					if ($type) {
 						$this->statement->bindValue($i, $value, $type);
 					}
@@ -480,7 +525,7 @@
 				$this->column = array();
 				foreach($this->schema() as $col) {
 					$this->column[] = $col->Field;
-					$params[$col->Field] = $data[$col->Field];
+					$params[$col->Field] = isset($data[$col->Field]) ? $data[$col->Field] : '';
 				}
 			} else {
 				foreach($this->column as $col) {
@@ -516,9 +561,11 @@
 			if ($this->column == '*') {
 				$this->column = array();
 				foreach($this->schema() as $col) {
-					$update .= $col->Field . '=:' . $col->Field . ', ';
-					$this->column[] = $col->Field;
-					$this->params[$col->Field] = $data[$col->Field];
+					if (isset($data[$col->Field])) {
+						$update .= $col->Field . '=:' . $col->Field . ', ';
+						$this->column[] = $col->Field;
+						$this->params[$col->Field] = $data[$col->Field];
+					}
 				}
 			} else {
 				foreach($this->column as $col) {
@@ -558,7 +605,7 @@
 				foreach($this->schema() as $col) {
 					$update .= $col->Field . '=:' . $col->Field . ', ';
 					$this->column[] = $col->Field;
-					$params[$col->Field] = $data[$col->Field];
+					$params[$col->Field] = isset($data[$col->Field]) ? $data[$col->Field] : '';
 				}
 			} else {
 				foreach($this->column as $col) {

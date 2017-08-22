@@ -13,7 +13,7 @@
 	* @package Core\Framework\DB
 	*/
 	class DB {
-		protected static function __callStatic($method, $args) {
+		public static function __callStatic($method, $args) {
 			$instance = new Database();
 			return $instance->$method(...$args);
 		}

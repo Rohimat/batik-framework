@@ -82,7 +82,7 @@
 				$file = $arr[sizeof($arr) - 1];
 				$folder = substr($filename, 0, strlen($filename) - strlen($file) - 1);
 
-				$path = DIR . "app/{$templates}" . ($arr > 1 ? "/{$folder}" : "");
+				$path = DIR . "app/{$templates}" . (sizeof($arr) > 1 ? "/{$folder}" : "");
 				$destination = "{$path}/{$file}.blade.php";
 
 				if (!is_dir($path)) {

@@ -7,6 +7,8 @@
 	
 
 	namespace Core\Framework;
+
+	use Core\Framework\Request;
 	use duncan3dc\Laravel\Blade;
 	use duncan3dc\Laravel\BladeInstance;
 	/**
@@ -30,7 +32,7 @@
 				$view = static::init(dirname($filename));
 				$name = substr(basename($filename), 0, -10);
 
-				return $view->render($name, $data);
+				return $view->render($name, (array)$data);
 			} else {
 				return 'View not found';
 			}
@@ -44,7 +46,28 @@
 		* @return string | null
 		*/
 		public static function show($name, $data = array()) {
-			echo static::make($name, $data);
+			echo static::make($name, (array)$data);
+		}
+
+		/**
+		* Create and display javascript file
+		*
+		* @param string $name A string that specified the name of view
+		* @param mixed[] $data Array contains data to be displayed
+		* @return string | null
+		*/
+		public static function javascript($name, $data = array()) {
+			$filename = views_path('javascript') . str_replace('.', '/', $name) . '.js';
+			if (file_exists($filename)) {
+				$script = file_get_contents($filename);
+				if (Request::isAjax()) {
+					return '<script>' . $script . '</script>';
+				} else {
+					return View::make('javascript', array("script" => $script));
+				}
+			} else {
+				return View::make('errors.404');
+			}
 		}
 		
 		

@@ -5,10 +5,11 @@
 	* @copyright 2017 BangunTeknologi.com
 	*/
 
-	use Core\Facades\Request;
-	use Core\Facades\Session;
-	use Core\Facades\View;
-	use Core\Classes\Response;
+	use Core\Framework\Request;
+	use Core\Framework\Session;
+	use Core\Framework\Response;
+	use Core\Framework\View;
+	use Core\Framework\Auth;
 
 	/**
 	* Return base URL
@@ -185,11 +186,33 @@
 		if (!empty($name)) {
 			$arr = explode('.', $name);
 			foreach ($arr as $n) {
-				$config = $config[$n];
+				$config = isset($config[$n]) ? $config[$n] : '';
 			}
 		}
 
 		return $config;
+	}
+
+	/**
+	* Get the references file values
+	* 
+	* @param string $name
+	* @return string
+	*/
+	function references($name = '', $key = '') {
+		$ref = require DIR . 'config/references.php';
+		if (!empty($name)) {
+			$arr = explode('.', $name);
+			foreach ($arr as $n) {
+				$ref = isset($ref[$n]) ? $ref[$n] : '';
+			}
+		}
+
+		if (!empty($key)) {
+			$ref = $ref[$key];
+		}
+
+		return $ref;
 	}
 	
 	/**
@@ -246,6 +269,22 @@
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	* Return the user auth
+	*/
+	function user() {
+		return Auth::user();
+	}
+
+	/**
+	* Redirect the page
+	* 
+	* @param string $url
+	*/
+	function redirect($url) {
+		header("Location:" . url($url));
 	}
 	
 	/**

@@ -43,6 +43,28 @@
 			$this->request = new Request();
 			$this->response = new Response();
 		}	
+
+		/**
+		* Check the variable request
+		*
+		* @return boolean 
+		*/
+		public function validate($field = array(), $data = array()) {
+			$valid = true;
+			$data = (array) $data;
+
+			if (is_assoc($field)) {
+			
+			} else {
+				foreach($field as $f) {
+					if (empty($data[$f]) || is_null($data[$f])) {
+						$valid = false;
+					}
+				}
+			}
+
+			return $valid;
+		}
 	}
 
 ?>

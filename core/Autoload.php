@@ -22,9 +22,12 @@
 		$arDir = explode('\\', $classname);
 		$basePath = DIR . strtolower($arDir[0]);
 		$filePath = $basePath . str_replace('\\', '/', substr($classname, strlen($arDir[0]), strlen($classname))) . '.php';
-		
+		$helperPath = DIR . "core/" . $classname . "/" . $classname . ".php"; 
+
 		if (file_exists($filePath)) {
 			require $filePath;
+		} elseif (file_exists($helperPath)) {
+			require $helperPath;
 		}
 	});
 

@@ -33,7 +33,7 @@
 		* @return boolean 
 		*/
 		public static function check() {
-			if(static::$started == false){
+			if(static::$started === false && session_status() == PHP_SESSION_NONE){
 				session_start();
 
 				static::$started = true;
@@ -77,7 +77,7 @@
 		* Destroying the session
 		*/
 		public static function destroy() {
-			if(static::$started == true){
+			if(static::check()){
 				session_unset();
 				session_destroy();
 			}

@@ -90,7 +90,7 @@
 		*/
 		protected function json($data) {
 			header("Content-type: application/json");
-			echo json_encode($response);
+			echo json_encode($data);
 		}
 		
 		/**
