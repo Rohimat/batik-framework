@@ -112,6 +112,16 @@
 		public static function flash($key, $values = '') {
 			setcookie("COOKIE_" . static::$prefix . $key, $values, time() + 60, "/");
 		}
+
+		/**
+		* Set a cookie value by key
+		* 
+		* @param string $key A string that specified the key of cookie
+		* @param string $value A string that specified the value
+		*/
+		public static function cookie($key, $value = '') {
+			setcookie("COOKIE_" . session_key() . "_" . $key, $value, time() + (3600 * 24), "/");
+		}
 	}
 
 ?>

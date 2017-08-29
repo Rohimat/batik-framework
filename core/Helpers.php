@@ -52,6 +52,16 @@
 	function asset($asset = '') {
 		return base_url() . $asset;	
 	}
+
+	/**
+	* Return the cdn URL
+	* 
+	* @param string $url
+	* @return string
+	*/
+	function cdn($url = '') {
+		return config('app.cdn') . '/' . $url;	
+	}
 	
 	/**
 	* Determine if the csrf token is valid
@@ -209,7 +219,7 @@
 		}
 
 		if (!empty($key)) {
-			$ref = $ref[$key];
+			$ref = isset($ref[$key]) ? $ref[$key] : '';
 		}
 
 		return $ref;
@@ -251,9 +261,9 @@
 	* @param array $arr
 	* @return boolean
 	*/
-	function is_assoc(array $arr) {
+	function is_assoc($arr) {
 		if (array() === $arr) return false;
-		return array_keys($arr) !== range(0, count($arr) - 1);
+		return array_keys((array)$arr) !== range(0, count($arr) - 1);
 	}
 
 	/**
@@ -286,6 +296,62 @@
 	function redirect($url) {
 		header("Location:" . url($url));
 	}
+
+	/**
+	* Encrypt the string
+	* 
+	* @param string $text
+	* @return string
+	*/
+	function encrypt($value) {
+		$key1 = substr(config('encryption.keyA') . '$$$$$$$$$$@@@@@@@@@@##########$$', 0, 32);
+		$key2 = substr(config('encryption.keyB') . '12345678900987654321012345678901', 0, 32);
+		$output = "";
+		$value = trim($value);
+
+		if (!empty($value)){
+			$output = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key1, $value, MCRYPT_MODE_ECB, $key2);
+			$output = trim(base64_encode($output));
+		}
+		
+		return trim($output);
+	}
+
+	/**
+	* Decrypt the string
+	* 
+	* @param string $text
+	* @return string
+	*/
+	function decrypt($value) {
+		$key1 = substr(config('encryption.keyA') . '$$$$$$$$$$@@@@@@@@@@##########$$', 0, 32);
+		$key2 = substr(config('encryption.keyB') . '12345678900987654321012345678901', 0, 32);
+		$output = "";
+		$value = trim($value);
+
+		try {
+			if (!empty($value)){
+				$output = @base64_decode(trim($value));
+				
+				if (!empty($output)) {
+					$output = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key1, $output, MCRYPT_MODE_ECB, $key2);
+				}
+			}
+		} catch (Exception $e) {
+			$output = $value;
+		}
+
+		return trim($output);
+	}
+
+	/**
+	* Get the session unique ID
+	* 
+	* @return string
+	*/
+	function session_key() {
+		return Session::get('UNIQUE_ID');
+	}
 	
 	/**
 	* Copy whole directory
@@ -312,5 +378,40 @@
 
 		closedir($dir); 
 	} 
+
+	/**
+	* Convert date format
+	* 
+	* @param string $Date
+	* @param string $Format
+	* @return string
+	*/
+	function format_date($Date = '00-00-0000', $Format = 'LongDate'){
+		global $Ref;
+		if (substr($Date, 0, 2) != '00' && !empty($Date)){
+			$arHari = array("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu");
+			$arBulan = array("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember");
+
+			if (strlen($Date) == 6){
+				$Tt = intval(substr($Date, -2, 2)) > 50 ? "19" . substr($Date, -2, 2) : "20" . substr($Date, -2, 2) ;
+				$Date = substr($Date, 0, 2) . "-" . substr($Date, 2, 2) . "-" . $Tt;
+			}
+			$Day = substr($Date, 2, 1) == '-' || substr($Date, 2, 1) == '/' ? substr($Date, 0, 2) : substr($Date, 8, 2);
+			$Month = substr($Date, 2, 1) == '-' || substr($Date, 2, 1) == '/' ? substr($Date, 3, 2) : substr($Date, 5, 2);
+			$Year = substr($Date, 2, 1) == '-' || substr($Date, 2, 1) == '/' ? substr($Date, 6, 4) : substr($Date, 0, 4);
+			$Year2 = substr($Year, 2, 2);
+			$Hari = $arHari[date("w", mktime(0, 0, 0, $Month, $Day, $Year))];
+			$Bulan = $arBulan[($Month * 1) - 1];
+			switch ($Format){
+				case "SQL":return "$Year-$Month-$Day";break;
+				case "IDN":return "$Day-$Month-$Year";break;
+				case "UN":return "{$Day}{$Month}{$Year2}";break;
+				case "ShortDate":return "$Day $Bulan $Year";break;
+				case "ShortDateNum":return "$Day$Month$Year2";break;
+				case "LongDate":default:return "$Hari, $Day $Bulan $Year";break;
+			}
+		}
+		else return "";
+	}
 
 ?>

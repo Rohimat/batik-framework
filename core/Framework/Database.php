@@ -495,7 +495,9 @@
 					$value = is_null($value) ? '' : $value;
 					$type = $this->type($value);
 					if ($type) {
-						$this->statement->bindValue(":$key", $value, $type);
+						if (strpos($this->query, ":$key") !== false) {
+							$this->statement->bindValue(":$key", $value, $type);
+						}
 					}
 				}
 			} else {

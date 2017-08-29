@@ -42,8 +42,8 @@
 			$data = null;
 
 			foreach ($user as $key => $value) {
-				if ($key != "password") {
-					$data = DB::table("users")->where([$key => $value])->first();
+				if ($key != 'password') {
+					$data = DB::table('app_users')->where([$key => $value])->first();
 					
 					if (isset($data->password) && !empty($data->password)) {
 						$found = true;
@@ -54,11 +54,15 @@
 
 			if ($found) {
 				if ($data->active == 'Y') {
-					if ($data->password == $user['password']) {
+					if (decrypt($data->password) == $user['password']) {
 						unset($data->password);
 
+						Session::set("UNIQUE_ID", base64_encode(uniqid() . rand(11111, 99999)));
 						Session::set("LOGIN", true);
 						Session::set("USER", $data);
+						Session::cookie("GROUP", $data->group_id);
+
+						DB::table('app_users')->where('id', $data->id)->update(['last_login' => date('Y-m-d H:i:s')]);
 
 						return true;
 					} else {

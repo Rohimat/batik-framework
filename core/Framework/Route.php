@@ -267,7 +267,7 @@
 					$_path = isset($arPath[$i]) ? $arPath[$i] : '';
 					$_map = isset($arMap[$i]) ? $arMap[$i] : '';
 					$_where = $this->where;
-
+					
 					if (substr($_map, 0, 1) == '{' && !empty($_path)) {
 						$var = substr($_map, 1, -1);
 						$where = isset($_where[$var]) ? $_where[$var] : '';
@@ -345,17 +345,22 @@
 			}
 
 			$arPath = explode('/', $path);
+			$strPath = '';
 			for ($i = 0; $i < sizeof($arPath); $i++) {
 				if ($i == 0) {
 					$controller = !empty($arPath[0]) ? $namespace . ucwords(strtolower($arPath[0])) . 'Controller' : ''; 
+					$strPath .= $arPath[$i] . '/';
 				} elseif ($i == 1) {
 					$method = $arPath[1];	
+					$strPath .= $arPath[$i] . '/';
+				} else {
+					$strPath .= '{args}/';
 				}
 			}
 			
 			$method = empty($method) ? 'index' : $method;
 			if (!empty($controller)) {
-				$this->map($path, $controller . '@' . $method);
+				$this->map(substr($strPath, 0, -1), $controller . '@' . $method);
 			}
 		}
 		

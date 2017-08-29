@@ -89,8 +89,12 @@
 		* @return string | json
 		*/
 		protected function json($data) {
-			header("Content-type: application/json");
-			echo json_encode($data);
+			if (Request::isAjax()) {
+				header("Content-type: application/json");
+				echo json_encode($data);
+			} else {
+				echo "Access denied, JSON must loaded by ajax request";
+			}
 		}
 		
 		/**
@@ -103,12 +107,12 @@
 		protected function download($string, $filename) {
 			set_time_limit(0);
 
-			header("Content-Disposition: attachment; filename=" . urlencode($filename));
-			header("Content-Type: application/force-download");
-			header("Content-Type: application/octet-stream");
-			header("Content-Type: application/download");
-			header("Content-Description: File Transfer");             
-			header("Content-Length: " . filesize($filename));
+			header('Content-Disposition: attachment; filename="' . $filename . '"');
+			header('Content-Type: application/force-download');
+			header('Content-Type: application/octet-stream');
+			header('Content-Type: application/download');
+			header('Content-Description: File Transfer');             
+			header('Content-Length: ' . filesize($filename));
 
 			echo $string;
 		}
@@ -122,12 +126,12 @@
 		protected function file($filename) {
 			set_time_limit(0);
 
-			header("Content-Disposition: attachment; filename=" . urlencode($filename));
-			header("Content-Type: application/force-download");
-			header("Content-Type: application/octet-stream");
-			header("Content-Type: application/download");
-			header("Content-Description: File Transfer");             
-			header("Content-Length: " . filesize($filename));
+			header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+			header('Content-Type: application/force-download');
+			header('Content-Type: application/octet-stream');
+			header('Content-Type: application/download');
+			header('Content-Description: File Transfer');             
+			header('Content-Length: ' . filesize($filename));
 
 			flush();
 			
