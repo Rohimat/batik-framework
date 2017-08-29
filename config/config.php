@@ -23,6 +23,12 @@
 			'lifetime' => 'forever',
 			'path'     => 'default'
 		],
+
+		// For encryption must 32 digit key
+		'encryption' => [
+			'keyA'     => '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
+			'keyB'	   => '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
+		]
 	]
 
 ?>
